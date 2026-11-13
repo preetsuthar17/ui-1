@@ -71,10 +71,15 @@ export const thing = definePrimitive({
       press: ({ api }, event) => api.toggle(event), // Runs on click.
     }),
     item: slot<{ value: string; disabled?: boolean }>({
+      role: "menuitem", // Core writes it, never attrs. A role that takes focus or activates says how.
+      focus: "roving",
+      press: ({ api }, event) => api.toggle(event),
       // Typed per-slot props, and their kinds, required when the slot takes props.
       props: { value: "string", disabled: "boolean" },
       present: (state) => state.open, // Element should exist. Custom elements bind and unbind on it.
-      attrs: (state, { id, key, props, api }) => ({ role: "option" }),
+      attrs: (state, { id, key, props, api }) => ({
+        "aria-disabled": props.disabled ? "true" : undefined,
+      }), // The role's required states, and only the ARIA it takes.
       live: live((state, { key }) => ({
         "data-highlighted": state.highlighted === key ? "" : undefined,
       })),
